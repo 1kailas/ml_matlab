@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATLAB ML Pipeline - Professional Guide</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #f6f8fc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --code: #020617;
+    --accent: #2563eb;
+}
+
+/* DARK MODE */
+body.dark {
+    --bg: #0b1220;
+    --card: #111827;
+    --text: #e5e7eb;
+    --code: #000000;
+    --accent: #38bdf8;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s ease;
+}
+
+/* HEADER */
+header {
+    background: #020617;
+    color: white;
+    padding: 45px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.3rem;
+}
+
+/* NAV */
+nav {
+    background: var(--card);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+}
+
+nav a:hover {
+    color: var(--accent);
+}
+
+/* BUTTON */
+.toggle-btn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--accent);
+    color: white;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    background: var(--card);
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+/* CODE */
+pre {
+    background: var(--code);
+    color: #38bdf8;
+    padding: 15px;
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+/* TAG */
+.tag {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e3a8a;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+/* FOOTER */
+footer {
+    background: #020617;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>MATLAB Machine Learning Pipeline</h1>
+<p>End-to-End ML Workflow with SVM + Evaluation</p>
+<button class="toggle-btn" onclick="toggleMode()">🌙 Toggle Mode</button>
+</header>
+
+<nav>
+<a href="#intro">Intro</a>
+<a href="#load">Load</a>
+<a href="#clean">Clean</a>
+<a href="#split">Split</a>
+<a href="#train">Train</a>
+<a href="#predict">Predict</a>
+<a href="#eval">Evaluate</a>
+</nav>
+
+<div class="container">
+
+<!-- INTRO -->
+<div class="card" id="intro">
+<span class="tag">Overview</span>
+<h2>Project Overview</h2>
+<p>
+This project demonstrates a full MATLAB Machine Learning pipeline using a diabetes dataset.
+It includes preprocessing, training a Support Vector Machine, predictions, accuracy evaluation,
+and confusion matrix visualization.
+</p>
+</div>
+
+<!-- LOAD -->
+<div class="card" id="load">
+<span class="tag">Step 1</span>
+<h2>Load Dataset</h2>
+<pre>
+dataset = readtable("Diabetes Missing Data.csv");
+</pre>
+</div>
+
+<!-- CLEAN -->
+<div class="card" id="clean">
+<span class="tag">Step 2</span>
+<h2>Data Cleaning</h2>
+<pre>
+glucose_avg = round(mean(dataset.Glucose,"omitmissing"));
+dataset.Glucose(ismissing(dataset.Glucose)) = glucose_avg;
+</pre>
+</div>
+
+<!-- SPLIT -->
+<div class="card" id="split">
+<span class="tag">Step 3</span>
+<h2>Train-Test Split</h2>
+<pre>
+data_partition = cvpartition(size(dataset,1),"HoldOut",0.3);
+
+training_dataset = dataset(training(data_partition),:);
+testing_dataset = dataset(test(data_partition),:);
+</pre>
+</div>
+
+<!-- TRAIN -->
+<div class="card" id="train">
+<span class="tag">Step 4</span>
+<h2>Model Training</h2>
+<pre>
+predictor = training_dataset(:,1:end-1);
+response = training_dataset(:,end);
+
+trained_mdl = fitcsvm(predictor, response);
+</pre>
+</div>
+
+<!-- PREDICT -->
+<div class="card" id="predict">
+<span class="tag">Step 5</span>
+<h2>Prediction</h2>
+<pre>
+predictor_test = testing_dataset(:,1:end-1);
+response_test = testing_dataset(:,end);
+
+pred = predict(trained_mdl, predictor_test);
+</pre>
+</div>
+
+<!-- EVALUATION -->
+<div class="card" id="eval">
+<span class="tag">Step 6</span>
+<h2>Evaluation Metrics</h2>
+
+<pre>
+correct_pred = nnz(pred == response_test.Class);
+wrong_pred = nnz(pred ~= response_test.Class);
+
+accry = (correct_pred / (correct_pred + wrong_pred)) * 100;
+</pre>
+
+<h3>📊 Confusion Matrix</h3>
+
+<pre>
+confusionchart(response_test.Class, pred);
+</pre>
+
+<p>
+The confusion matrix shows correct vs incorrect classifications visually.
+</p>
+
+</div>
+
+</div>
+
+<footer>
+<p>MATLAB ML Pipeline | Professional Documentation 🚀</p>
+</footer>
+
+<script>
+function toggleMode() {
+    document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>
